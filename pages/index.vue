@@ -1,16 +1,14 @@
 <script setup>
 const submitButtonRef = ref(null);
-const formRef = ref(null);
 
 const confirmReservation = () => {
   submitButtonRef.value.click();
 };
 
-const onSubmit = (value = {}) => {
-  console.log("送出的值:", value);
+const onSubmit = (value, { resetForm }) => {
+  console.log("表單提交的值", value);
   alert("送出訂房!");
-  // 改成用 VeeValidate  的 resetForm 方法將表單重置
-  formRef.value.reset();
+  resetForm();
 };
 </script>
 
@@ -21,70 +19,95 @@ const onSubmit = (value = {}) => {
         <section>
           <h2 class="mb-4 fw-bold">訂房人資訊</h2>
 
-          <form @submit.prevent="onSubmit" ref="formRef">
+          <Form @submit="onSubmit" v-slot="{ errors }">
             <div class="mb-4">
               <label for="name" class="form-label fw-bold">姓名</label>
-              <input
-                id="name"
-                type="text"
-                class="form-control is-invalid p-3 rounded-3"
-                placeholder="請輸入姓名"
+              <Field
+              id="name"
+              name="姓名"
+              rules="required|min:2"
+              type="text"
+              class="form-control p-3 rounded-3"
+              :class="{ 'is-invalid': errors['姓名'] }"
+              placeholder="請輸入姓名"
               />
-              <span name="姓名" class="invalid-feedback"
-                >姓名 不能小於 2 個字元</span
-              >
+              <ErrorMessage name="姓名" class="invalid-feedback" />
             </div>
 
             <div class="mb-4">
               <label for="phone" class="form-label fw-bold">手機號碼</label>
-              <input
+              <Field
                 id="phone"
+                name="手機號碼"
+                rules="required|isPhone"
                 type="tel"
-                class="form-control p-3 rounded-3 is-invalid"
+                class="form-control p-3 rounded-3"
+                :class="{ 'is-invalid': errors['手機號碼'] }"
                 placeholder="請輸入手機號碼"
               />
-              <span class="invalid-feedback">需要正確的電話號碼</span>
+              <ErrorMessage name="手機號碼" class="invalid-feedback" />
             </div>
 
             <div class="mb-4">
               <label for="email" class="form-label fw-bold">電子信箱</label>
-              <input
+              <Field
                 id="email"
+                name="電子信箱"
+                rules="required|email"
                 type="email"
-                class="form-control p-3 rounded-3 is-invalid"
+                class="form-control p-3 rounded-3"
+                :class="{ 'is-invalid': errors['電子信箱'] }"
                 placeholder="請輸入電子信箱"
               />
-              <span class="invalid-feedback">電子信箱 須為有效的電子信箱</span>
+              <ErrorMessage name="電子信箱" class="invalid-feedback" />
             </div>
 
             <div class="mb-4">
               <label for="road" class="form-label fw-bold">地址</label>
               <div class="d-flex gap-2 mb-4">
-                <select
-                  class="form-select w-50 p-3 fw-medium rounded-3 is-invalid"
+                <Field
+                  as="select"
+                  v-slot="value"
+                  name="縣市"
+                  rules="required"
+                  class="form-select w-50 p-3 fw-medium rounded-3"
+                  :class="{ 'is-invalid': errors['縣市'] }"
                 >
                   <option selected disabled value="">請選擇縣市</option>
                   <option value="高雄市">高雄市</option>
-                </select>
-                <select
-                  class="form-select w-50 p-3 fw-medium rounded-3 is-invalid"
-                >
+                </Field>
+
+                  <Field
+                    as="select"
+                    name="行政區"
+                    rules="required"
+                    class="form-select w-50 p-3 fw-medium rounded-3"
+                    :class="{ 'is-invalid': errors['行政區'] }"
+                  >
                   <option selected disabled value="">請選擇行政區</option>
                   <option value="前金區">前金區</option>
                   <option value="鹽埕區">鹽埕區</option>
                   <option value="新興區">新興區</option>
-                </select>
+                </Field>
               </div>
-              <input
+
+
+
+               <Field
                 id="road"
+                name="地址"
+                rules="required"
                 type="text"
-                class="form-control p-3 rounded-3 is-invalid"
+                class="form-control p-3 rounded-3"
+                :class="{ 'is-invalid': errors['地址'] }"
                 placeholder="請輸入詳細地址"
               />
-              <span class="invalid-feedback">地址 為必填</span>
+              <ErrorMessage name="地址" class="invalid-feedback" />
             </div>
+
+
             <button ref="submitButtonRef" type="submit" class="d-none"></button>
-          </form>
+          </Form>
         </section>
       </div>
       <div class="col-md-5">

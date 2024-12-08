@@ -7,5 +7,6 @@ export default defineNuxtConfig({
       linkActiveClass: "active",
       linkExactActiveClass: "active",
     },
-  }
+  },
+  modules: ["@vee-validate/nuxt"],
 });
